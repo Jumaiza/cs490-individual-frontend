@@ -1,10 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
+import { AppRouter } from './routing/AppRouter';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
+      <AppRouter/>
+      {/* <header className="App-header">
         <p>
           Zaid Abujumaiza
         </p>
@@ -20,7 +22,7 @@ function App() {
         >
           CLICK ME TO TEST BACKEND
         </a>
-      </header>
+      </header> */}
     </div>
   );
 }
