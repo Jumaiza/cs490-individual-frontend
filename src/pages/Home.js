@@ -1,7 +1,9 @@
-export function Home (props){
+export default function Home (props){
     return (
-        <p>
-            Home
-        </p>
+        <div>
+            <h1>
+                Home
+            </h1>
+        </div>
     );
 }

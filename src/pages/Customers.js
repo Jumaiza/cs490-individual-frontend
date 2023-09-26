@@ -1,8 +1,8 @@
-export default function Movies () {
+export default function Customers () {
     return (
         <div>
             <h1>
-                Movies
+                Customers
             </h1>
         </div>
     );
