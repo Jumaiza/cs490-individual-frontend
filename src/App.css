@@ -1,5 +1,6 @@
 .App {
-  text-align: center;
+  text-align: left;
+  display: block;
 }
 
 .top-bar{
@@ -8,4 +9,8 @@
   border: none;
   margin: 0;
   caret-color: transparent;
+}
+
+.container {
+  margin-left: 15%;
 }

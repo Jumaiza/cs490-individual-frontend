@@ -7,7 +7,9 @@ function App() {
     <div className="App">
       <hr className='top-bar'></hr>
       <SideNav/>
-      <Outlet/>
+      <div className='container'>
+        <Outlet/>
+      </div>
     </div>
   );
 }
