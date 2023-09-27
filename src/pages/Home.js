@@ -5,10 +5,10 @@ import DetailsPopup from '../components/DetailsPopup';
 
 export default function Home (){
     const [movieData, setMovieData] = useState([]);
-    const [selectedMovie, setSelectedMovie] = useState(null);
-    const [isMoviePopupOpen, setIsMoviePopupOpen] = useState(false);
-    
     const [actorData, setActorData] = useState([]);
+    const [selectedObject, setSelectedObject] = useState(null);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isActor, setIsActor] = useState(false);
 
     useEffect(() => {
         axios.get('http://localhost:4000/home/top-5-movies')
@@ -17,36 +17,65 @@ export default function Home (){
             })
             .catch((err) => {
                 console.error(err)
-            });
+        });
+        axios.get('http://localhost:4000/home/top-5-actors')
+            .then((res) => {
+                setActorData(res.data);
+            })
+            .catch((err) => {
+                console.error(err)
+        });
     }, [])
 
-    const handleMovieClick = (movie) => {
-        setSelectedMovie(movie);
-        setIsMoviePopupOpen(true);
+    const handleClick = (object, isActor) => {
+        setIsActor(isActor);
+        if(isActor){
+            const reqBody = {actorId: object.actor_id};
+            axios.post('http://localhost:4000/home/top-5-films-by-actor-id', reqBody)
+            .then((res) => {
+                setSelectedObject(res.data)
+            })
+            .catch((err) => {
+                console.error(err)
+            });
+        }else{
+            setSelectedObject(object);
+        }
+        setIsPopupOpen(true);
     }
 
-    const handleMoviePopupClose = () => {
-        setSelectedMovie(null);
-        setIsMoviePopupOpen(false);
+    const handlePopupClose = () => {
+        setSelectedObject(null);
+        setIsPopupOpen(false);
     }
 
     return (
         <div className="home">
             <h1> Top 5 Rented Movies: </h1>
-            <List>
-                {movieData.map((item, index) => (
-                    <ListItemButton onClick={() => handleMovieClick(item)}>
-                        <ListItemText primary={item.title}/>
+            <List sx={{ maxWidth: '400px'}}>
+                {movieData.map((movie) => (
+                    <ListItemButton onClick={() => handleClick(movie, false)}>
+                        <ListItemText primary={movie.title}/>
                     </ListItemButton>
                 ))}
             </List>
-            {selectedMovie !== null && (
+            <h1> Top 5 Actors By # of Films: </h1>
+            <List sx={{ maxWidth: '400px'}}>
+                {actorData.map((actor) => (
+                    <ListItemButton onClick={() => handleClick(actor, true)}>
+                        <ListItemText primary={`${actor.first_name} ${actor.last_name}`}/>
+                    </ListItemButton>
+                ))}
+            </List>
+            {selectedObject !== null && (
                 <DetailsPopup
-                isOpen={isMoviePopupOpen}
-                handleClose={handleMoviePopupClose}
-                item={selectedMovie}
+                isOpen={isPopupOpen}
+                handleClose={handlePopupClose}
+                item={selectedObject}
+                isActor={isActor}
                 />
             )}
+
         </div>
     );
 }
