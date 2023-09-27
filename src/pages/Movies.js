@@ -2,6 +2,7 @@ import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
 import { List, ListItemButton, ListItemText } from "@mui/material";
+import DetailsPopup from "../components/DetailsPopup";
 
 export default function Movies () {
 
@@ -12,6 +13,8 @@ export default function Movies () {
     });
     const [movieData, setMovieData] = useState([]);
     const [fieldClicked, setFieldClicked] = useState('');
+    const [selectedMovie, setSelectedMovie] = useState(null);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     const handleChange = (e, field) => {
         setFormData({...formData, [field]: e.target.value})
@@ -50,6 +53,15 @@ export default function Movies () {
             default:
                 console.log("invalid field")
         }
+    }
+
+    const handleMovieClick = (movie) => {
+        setSelectedMovie(movie);
+        setIsPopupOpen(true);
+    }
+    const handlePopupClose = () => {
+        setSelectedMovie(null);
+        setIsPopupOpen(false);
     }
 
     return (
@@ -101,7 +113,7 @@ export default function Movies () {
             { movieData.length ? (
                 <List>
                     {movieData.map((movie) => (
-                        <ListItemButton >
+                        <ListItemButton onClick={() => handleMovieClick(movie)}>
                             {fieldClicked === 'film_title' && (
                                 <ListItemText primary={movie.title} />
                             )}
@@ -116,6 +128,14 @@ export default function Movies () {
                 </List>
             ) : (
                 <p>No results</p>
+            )}
+            {selectedMovie !== null && (
+                <DetailsPopup
+                    isOpen={isPopupOpen}
+                    handleClose={handlePopupClose}
+                    item={selectedMovie}
+                    isActor={false}
+                />
             )}
         </div>
     );
