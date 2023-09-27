@@ -11,14 +11,14 @@ export default function Home (){
     const [isActor, setIsActor] = useState(false);
 
     useEffect(() => {
-        axios.get('http://localhost:4000/home/top-5-movies')
+        axios.get('http://localhost:4000/api/home/top-5-movies')
             .then((res) => {
                 setMovieData(res.data);
             })
             .catch((err) => {
                 console.error(err)
         });
-        axios.get('http://localhost:4000/home/top-5-actors')
+        axios.get('http://localhost:4000/api/home/top-5-actors')
             .then((res) => {
                 setActorData(res.data);
             })
@@ -31,7 +31,7 @@ export default function Home (){
         setIsActor(isActor);
         if(isActor){
             const reqBody = {actorId: object.actor_id};
-            axios.post('http://localhost:4000/home/top-5-films-by-actor-id', reqBody)
+            axios.post('http://localhost:4000/api/home/top-5-films-by-actor-id', reqBody)
             .then((res) => {
                 setSelectedObject(res.data)
             })
@@ -52,7 +52,7 @@ export default function Home (){
     return (
         <div className="home">
             <h1> Top 5 Rented Movies: </h1>
-            <List sx={{ maxWidth: '400px'}}>
+            <List>
                 {movieData.map((movie) => (
                     <ListItemButton onClick={() => handleClick(movie, false)}>
                         <ListItemText primary={movie.title}/>
@@ -60,7 +60,7 @@ export default function Home (){
                 ))}
             </List>
             <h1> Top 5 Actors By # of Films: </h1>
-            <List sx={{ maxWidth: '400px'}}>
+            <List>
                 {actorData.map((actor) => (
                     <ListItemButton onClick={() => handleClick(actor, true)}>
                         <ListItemText primary={`${actor.first_name} ${actor.last_name}`}/>
