@@ -127,7 +127,7 @@ export default function Customers () {
                     isOpen={isPopupOpen}
                     handleClose={handlePopupClose}
                     item={selectedCustomer}
-                    customerMovies={customersRentedMovies}
+                    secondItem={customersRentedMovies}
                     type="customer"
                 />
             )}

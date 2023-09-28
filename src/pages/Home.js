@@ -11,6 +11,7 @@ export default function Home (){
     const [selectedObject, setSelectedObject] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [popUpType, setPopupType] = useState('');
+    const [actorMovies, setActorMovies] = useState([]);
 
     useEffect(() => {
         axios.get('http://localhost:4000/api/home/top-5-movies')
@@ -31,23 +32,23 @@ export default function Home (){
 
     const handleClick = (object, type) => {
         setPopupType(type);
+        setSelectedObject(object);
         if(type === "actor"){
             const reqBody = {actorId: object.actor_id};
             axios.post('http://localhost:4000/api/home/top-5-films-by-actor-id', reqBody)
             .then((res) => {
-                setSelectedObject(res.data)
+                setActorMovies(res.data)
             })
             .catch((err) => {
                 console.error(err)
             });
-        }else{
-            setSelectedObject(object);
         }
         setIsPopupOpen(true);
     }
 
     const handlePopupClose = () => {
         setSelectedObject(null);
+        setActorMovies(null);
         setIsPopupOpen(false);
     }
 
@@ -76,11 +77,12 @@ export default function Home (){
                     </ListItemButton>
                 ))}
             </List>
-            {selectedObject !== null && (
+            {(selectedObject !== null && actorMovies !== null) && (
                 <DetailsPopup
                 isOpen={isPopupOpen}
                 handleClose={handlePopupClose}
                 item={selectedObject}
+                secondItem={actorMovies}
                 type={popUpType}
                 />
             )}
