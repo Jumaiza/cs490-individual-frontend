@@ -1,11 +1,11 @@
 import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { List, ListItemButton, ListItemText } from "@mui/material";
+import { List, ListItemButton, ListItemText, ListItemIcon } from "@mui/material";
 import DetailsPopup from "../components/DetailsPopup";
+import MovieIcon from '@mui/icons-material/Movie';
 
 export default function Movies () {
-
     const [formData, setFormData] = useState({
         film_title: '',
         actor_name: '',
@@ -51,7 +51,7 @@ export default function Movies () {
                 });
                 break;
             default:
-                console.log("invalid field")
+                console.log("Invalid field")
         }
     }
 
@@ -66,15 +66,17 @@ export default function Movies () {
 
     return (
         <div className="movies">
-            <h1>Search For A Movie:</h1>
+            <h1>Movies</h1>
+            <h2>Search For A Movie:</h2>
             <TextField
                 label="Film Title"
                 variant="outlined"
-                sx={{ width: '500px'}}
+                sx={{ width: '500px', marginRight: '5px'}}
                 onChange={(e) => handleChange(e, 'film_title')}
             />
             <Button
                 variant="contained"
+                sx={{ height: '55px'}}
                 onClick={() => handleClick('film_title')}
             >
                 Search by Film Title
@@ -84,11 +86,12 @@ export default function Movies () {
             <TextField
                 label="Actor Name"
                 variant="outlined"
-                sx={{ width: '500px'}}
+                sx={{ width: '500px', marginRight: '5px'}}
                 onChange={(e) => handleChange(e, 'actor_name')}
             />
             <Button
                 variant="contained"
+                sx={{ height: '55px'}}
                 onClick={() => handleClick('actor_name')}
             >
                 Search by Actor Name
@@ -98,11 +101,12 @@ export default function Movies () {
             <TextField
                 label="Film Category"
                 variant="outlined"
-                sx={{ width: '500px'}}
+                sx={{ width: '500px', marginRight: '5px'}}
                 onChange={(e) => handleChange(e, 'film_category')}
             />
             <Button
                 variant="contained"
+                sx={{ height: '55px'}}
                 onClick={() => handleClick('film_category')}
             >
                 Search by Film Cateogry
@@ -113,7 +117,10 @@ export default function Movies () {
             { movieData.length ? (
                 <List>
                     {movieData.map((movie) => (
-                        <ListItemButton onClick={() => handleMovieClick(movie)}>
+                        <ListItemButton onClick={() => handleMovieClick(movie)} sx={{ width: '80%'}}>
+                            <ListItemIcon>
+                                <MovieIcon/>
+                            </ListItemIcon>
                             {fieldClicked === 'film_title' && (
                                 <ListItemText primary={movie.title} />
                             )}
@@ -134,7 +141,7 @@ export default function Movies () {
                     isOpen={isPopupOpen}
                     handleClose={handlePopupClose}
                     item={selectedMovie}
-                    isActor={false}
+                    type="movie"
                 />
             )}
         </div>

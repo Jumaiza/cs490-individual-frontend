@@ -1,14 +1,16 @@
 import { useState, useEffect} from 'react';
 import axios from 'axios';
-import { List, ListItemButton, ListItemText } from '@mui/material';
+import { List, ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
 import DetailsPopup from '../components/DetailsPopup';
+import MovieIcon from '@mui/icons-material/Movie';
+import BadgeIcon from '@mui/icons-material/Badge';
 
 export default function Home (){
     const [movieData, setMovieData] = useState([]);
     const [actorData, setActorData] = useState([]);
     const [selectedObject, setSelectedObject] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [isActor, setIsActor] = useState(false);
+    const [popUpType, setPopupType] = useState('');
 
     useEffect(() => {
         axios.get('http://localhost:4000/api/home/top-5-movies')
@@ -27,9 +29,9 @@ export default function Home (){
         });
     }, [])
 
-    const handleClick = (object, isActor) => {
-        setIsActor(isActor);
-        if(isActor){
+    const handleClick = (object, type) => {
+        setPopupType(type);
+        if(type === "actor"){
             const reqBody = {actorId: object.actor_id};
             axios.post('http://localhost:4000/api/home/top-5-films-by-actor-id', reqBody)
             .then((res) => {
@@ -51,18 +53,25 @@ export default function Home (){
 
     return (
         <div className="home">
-            <h1> Top 5 Rented Movies: </h1>
+            <h1>Home</h1>
+            <h2> Top 5 Rented Movies: </h2>
             <List>
                 {movieData.map((movie) => (
-                    <ListItemButton onClick={() => handleClick(movie, false)}>
+                    <ListItemButton onClick={() => handleClick(movie, "movie")} sx={{ width: '80%'}}>
+                        <ListItemIcon>
+                            <MovieIcon/>
+                        </ListItemIcon>
                         <ListItemText primary={movie.title}/>
                     </ListItemButton>
                 ))}
             </List>
-            <h1> Top 5 Actors By # of Films: </h1>
+            <h2> Top 5 Actors By # of Films: </h2>
             <List>
                 {actorData.map((actor) => (
-                    <ListItemButton onClick={() => handleClick(actor, true)}>
+                    <ListItemButton onClick={() => handleClick(actor, "actor")} sx={{ width: '80%'}}>
+                        <ListItemIcon>
+                            <BadgeIcon/>
+                        </ListItemIcon>
                         <ListItemText primary={`${actor.first_name} ${actor.last_name}`}/>
                     </ListItemButton>
                 ))}
@@ -72,7 +81,7 @@ export default function Home (){
                 isOpen={isPopupOpen}
                 handleClose={handlePopupClose}
                 item={selectedObject}
-                isActor={isActor}
+                type={popUpType}
                 />
             )}
 
