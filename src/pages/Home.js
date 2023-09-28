@@ -48,7 +48,6 @@ export default function Home (){
 
     const handlePopupClose = () => {
         setSelectedObject(null);
-        setActorMovies(null);
         setIsPopupOpen(false);
     }
 
@@ -56,28 +55,32 @@ export default function Home (){
         <div className="home">
             <h1>Home</h1>
             <h2> Top 5 Rented Movies: </h2>
-            <List>
-                {movieData.map((movie) => (
-                    <ListItemButton onClick={() => handleClick(movie, "movie")} sx={{ width: '80%'}}>
-                        <ListItemIcon>
-                            <MovieIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary={movie.title}/>
-                    </ListItemButton>
-                ))}
-            </List>
+            <div title='top-5-movies'>
+                <List>
+                    {movieData.map((movie) => (
+                        <ListItemButton onClick={() => handleClick(movie, "movie")} sx={{ width: '80%'}}>
+                            <ListItemIcon>
+                                <MovieIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary={movie.title}/>
+                        </ListItemButton>
+                    ))}
+                </List>
+            </div>
             <h2> Top 5 Actors By # of Films: </h2>
-            <List>
-                {actorData.map((actor) => (
-                    <ListItemButton onClick={() => handleClick(actor, "actor")} sx={{ width: '80%'}}>
-                        <ListItemIcon>
-                            <BadgeIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary={`${actor.first_name} ${actor.last_name}`}/>
-                    </ListItemButton>
-                ))}
-            </List>
-            {(selectedObject !== null && actorMovies !== null) && (
+            <div title='top-5-actors'>
+                <List>
+                    {actorData.map((actor) => (
+                        <ListItemButton onClick={() => handleClick(actor, "actor")} sx={{ width: '80%'}}>
+                            <ListItemIcon>
+                                <BadgeIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary={`${actor.first_name} ${actor.last_name}`}/>
+                        </ListItemButton>
+                    ))}
+                </List>
+            </div>
+            {(selectedObject !== null) && (
                 <DetailsPopup
                 isOpen={isPopupOpen}
                 handleClose={handlePopupClose}
@@ -86,7 +89,6 @@ export default function Home (){
                 type={popUpType}
                 />
             )}
-
         </div>
     );
 }
