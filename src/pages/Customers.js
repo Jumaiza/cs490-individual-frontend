@@ -79,15 +79,22 @@ export default function Customers () {
 
     const generatePdf = () => {
         const pdf = new jsPDF();
-        customerData.forEach((data, index) => {
-            if (index > 0) {
-              pdf.addPage();
-            }
+        const itemsPerPage = 3;
+        const verticalSpacing = 80;
+        for (let i = 0; i < customerData.length; i += itemsPerPage) {
+          if (i > 0) {
+            pdf.addPage();
+          }
+          for (let j = 0; j < itemsPerPage && i + j < customerData.length; j++) {
+            const data = customerData[i + j];
             const content = JSON.stringify(data, null, 4);
-            pdf.text(content, 5, 5);
-          });
+            const verticalPosition = 10 + j * verticalSpacing; // Adjust vertical position
+            pdf.text(content, 5, verticalPosition);
+          }
+        }
         pdf.save('generated.pdf');
-    }
+      };
+      
 
     return (
         <div>

@@ -71,10 +71,12 @@ export default function Movies () {
             <TextField
                 label="Film Title"
                 variant="outlined"
+                title="film-title-input"
                 sx={{ width: '500px', marginRight: '5px'}}
                 onChange={(e) => handleChange(e, 'film_title')}
             />
             <Button
+                title="film-title-search"
                 variant="contained"
                 sx={{ height: '55px'}}
                 onClick={() => handleClick('film_title')}
