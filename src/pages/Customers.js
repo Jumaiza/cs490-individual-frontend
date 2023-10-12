@@ -4,12 +4,15 @@ import axios from "axios";
 import { List, ListItemButton, ListItemText, ListItemIcon } from "@mui/material";
 import DetailsPopup from "../components/DetailsPopup";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import CustomerForm from "../components/CustomerForm";
+import BackendAlert from "../components/BackendAlert";
 
 export default function Customers () {
     const [customerData, setCustomerData] = useState([]);
     const [formData, setFormData] = useState({
         customer_id: '',
         name: '',
+        first_name : '',
     })
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [customersRentedMovies, setCustomersRentedMovies] = useState([]);
@@ -76,6 +79,9 @@ export default function Customers () {
     return (
         <div>
             <h1>Customers</h1>
+            <h2>Add a New Customer:</h2>
+            <CustomerForm/>
+            <BackendAlert/>
             <h2>Filter Customers:</h2>
             <TextField
                 label="Customer ID"
@@ -110,8 +116,8 @@ export default function Customers () {
             <h2>Customer Results:</h2>
             { customerData.length ? (
                 <List>
-                    {customerData.map((customer) => (
-                        <ListItemButton onClick={() => handleCustomerClick(customer)} sx={{ width: '80%'}}>
+                    {customerData.map((customer, i) => (
+                        <ListItemButton onClick={() => handleCustomerClick(customer)} sx={{ width: '80%'}} key={i}>
                             <ListItemIcon>
                                 <AccountBoxIcon/>
                             </ListItemIcon>

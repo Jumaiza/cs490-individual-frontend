@@ -1,13 +1,15 @@
 import { Dialog } from "@mui/material";
-import { Button, TextField, Alert } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from 'axios';
+import CustomerForm from "./CustomerForm";
+import BackendAlert from "./BackendAlert";
 
 export default function DetailsPopup (props) {
     const [formData, setFormData] = useState({ customer_id: '', });
     const [filmInventoryId, setFilmInventoryId] = useState("");
     const [IsFilmAvailable, setIsFilmAvailable] = useState(true);
-    const [backendAlert, setBackendAlert] = useState("");
+    const [backendMessage, setBackendMessage] = useState("");
     const [rentedSuccess, setRentedSuccess] = useState(false);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
 
@@ -30,32 +32,34 @@ export default function DetailsPopup (props) {
     const handleChange = (e, field) => {
         setFormData({...formData, [field]: e.target.value})
         setRentedSuccess(false);
-        setBackendAlert("");
+        setBackendMessage("");
     }
 
     const handleClick = (type) => {
         if(type === "rent_film"){
             axios.post('http://localhost:4000/api/movies/rent-to-customer', {inventory_id: filmInventoryId, customer_id: formData.customer_id})
                 .then((res) => {
-                    setBackendAlert(res.data)
+                    setBackendMessage(res.data)
                     setRentedSuccess(true);
                 })
                 .catch((err) => {
-                    setBackendAlert(err.response.data);
+                    setBackendMessage(err.response.data);
             });
-        }
-        if(window.confirm("Are you sure you want to delete this customer? This action is permenant!")){
-            axios.post('http://localhost:4000/api/customers/delete-customer-by-id', {address_id: props.item.address_id, customer_id: props.item.customer_id})
-                .then((res) => {
-                    setBackendAlert(res.data)
-                    setDeleteSuccess(true);
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                })
-                .catch((err) => {
-                    setBackendAlert(err.response.data);
-            });
+        }else{
+            console.log(props.item.customer_id)
+            if(window.confirm("Are you sure you want to delete this customer? This action is permenant!")){
+                axios.post('http://localhost:4000/api/customers/delete-customer-by-id', {customer_id: props.item.customer_id, address_id: props.item.address_id})
+                    .then((res) => {
+                        setBackendMessage(res.data)
+                        setDeleteSuccess(true);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    })
+                    .catch((err) => {
+                        setBackendMessage(err.response.data);
+                });
+            }
         }
     }
 
@@ -87,12 +91,7 @@ export default function DetailsPopup (props) {
                     >
                         Submit Rental
                     </Button>
-                    { (rentedSuccess && backendAlert !== "" ) && (
-                        <Alert severity="success"> {backendAlert} </Alert>
-                    )} 
-                    { (!rentedSuccess && backendAlert !== "")  && (
-                        <Alert severity="error"> {backendAlert} </Alert>
-                    )}
+                    <BackendAlert isSuccessful={rentedSuccess} message={backendMessage}/>
                 </div>
             )}
             { props.type === "actor" && (
@@ -111,9 +110,9 @@ export default function DetailsPopup (props) {
             { props.type === "customer" && (
                 <div className='customer-details' style={{ margin: '20px'}}>
                     <h1>Customer Details: </h1>
-                    {Object.entries(props.item).map(([key, value]) =>(
-                        <p>{key}: {value}</p>
-                    ))}
+                    {/* <CustomerForm
+                        customer={props.item}
+                    /> */}
                     <h1>Movies Rented Out By Customer: </h1>
                     <h3>Title & Return Status</h3>
                     {props.secondItem.map((movie) => (
@@ -128,12 +127,7 @@ export default function DetailsPopup (props) {
                     > 
                         Delete Customer
                     </Button>
-                    { (deleteSuccess && backendAlert !== "" ) && (
-                        <Alert severity="success"> {backendAlert} </Alert>
-                    )} 
-                    { (!deleteSuccess && backendAlert !== "")  && (
-                        <Alert severity="error"> {backendAlert} </Alert>
-                    )}
+                    <BackendAlert isSuccessful={deleteSuccess} message={backendMessage}/>
                 </div>
             )}
         </Dialog>
