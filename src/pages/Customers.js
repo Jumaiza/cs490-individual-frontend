@@ -6,6 +6,7 @@ import DetailsPopup from "../components/DetailsPopup";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import CustomerForm from "../components/CustomerForm";
 import BackendAlert from "../components/BackendAlert";
+import jsPDF from 'jspdf';
 
 export default function Customers () {
     const [customerData, setCustomerData] = useState([]);
@@ -76,6 +77,18 @@ export default function Customers () {
         setIsPopupOpen(false);
     }
 
+    const generatePdf = () => {
+        const pdf = new jsPDF();
+        customerData.forEach((data, index) => {
+            if (index > 0) {
+              pdf.addPage();
+            }
+            const content = JSON.stringify(data, null, 4);
+            pdf.text(content, 5, 5);
+          });
+        pdf.save('generated.pdf');
+    }
+
     return (
         <div>
             <h1>Customers</h1>
@@ -113,21 +126,24 @@ export default function Customers () {
             </Button>
             <br></br>
             <br></br>
-            <h2>Customer Results:</h2>
-            { customerData.length ? (
-                <List>
-                    {customerData.map((customer, i) => (
-                        <ListItemButton onClick={() => handleCustomerClick(customer)} sx={{ width: '80%'}} key={i}>
-                            <ListItemIcon>
-                                <AccountBoxIcon/>
-                            </ListItemIcon>
-                            <ListItemText primary={`${customer.first_name} ${customer.last_name}`} secondary={`ID: ${customer.customer_id}`}/>
-                        </ListItemButton>
-                    ))}
-                </List>
-            ) : (
-                <p>No results</p>
-            )}
+            <div id="pdf-content">
+                <h2>Customer Results:</h2>
+                <Button variant="outlined" color="secondary" onClick={generatePdf}> GENERATE PDF</Button>
+                { customerData.length ? (
+                    <List>
+                        {customerData.map((customer, i) => (
+                            <ListItemButton onClick={() => handleCustomerClick(customer)} sx={{ width: '80%'}} key={i}>
+                                <ListItemIcon>
+                                    <AccountBoxIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary={`${customer.first_name} ${customer.last_name}`} secondary={`ID: ${customer.customer_id}`}/>
+                            </ListItemButton>
+                        ))}
+                    </List>
+                ) : (
+                    <p>No results</p>
+                )}
+            </div>
             { (selectedCustomer !== null && customersRentedMovies !== null ) && (
                 <DetailsPopup
                     isOpen={isPopupOpen}

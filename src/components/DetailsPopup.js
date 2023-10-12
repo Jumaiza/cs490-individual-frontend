@@ -10,8 +10,7 @@ export default function DetailsPopup (props) {
     const [filmInventoryId, setFilmInventoryId] = useState("");
     const [IsFilmAvailable, setIsFilmAvailable] = useState(true);
     const [backendMessage, setBackendMessage] = useState("");
-    const [rentedSuccess, setRentedSuccess] = useState(false);
-    const [deleteSuccess, setDeleteSuccess] = useState(false);
+    const [backendSuccess, setBackendSuccess] = useState(false);
 
     useEffect(() => {
         if(props.type==="movie"){
@@ -27,11 +26,11 @@ export default function DetailsPopup (props) {
                 console.error(err)
             });
         }
-    }, [props.type, props.item.film_id, rentedSuccess]);
+    }, [props.type, props.item.film_id, backendSuccess]);
 
     const handleChange = (e, field) => {
         setFormData({...formData, [field]: e.target.value})
-        setRentedSuccess(false);
+        setBackendSuccess(false);
         setBackendMessage("");
     }
 
@@ -40,10 +39,11 @@ export default function DetailsPopup (props) {
             axios.post('http://localhost:4000/api/movies/rent-to-customer', {inventory_id: filmInventoryId, customer_id: formData.customer_id})
                 .then((res) => {
                     setBackendMessage(res.data)
-                    setRentedSuccess(true);
+                    setBackendSuccess(true);
                 })
                 .catch((err) => {
-                    setBackendMessage(err.response.data);
+                    setBackendMessage(err.response.data.error);
+                    setBackendSuccess(false);
             });
         }else{
             console.log(props.item.customer_id)
@@ -51,13 +51,14 @@ export default function DetailsPopup (props) {
                 axios.post('http://localhost:4000/api/customers/delete-customer-by-id', {customer_id: props.item.customer_id, address_id: props.item.address_id})
                     .then((res) => {
                         setBackendMessage(res.data)
-                        setDeleteSuccess(true);
+                        setBackendSuccess(true);
                         setTimeout(() => {
                             window.location.reload();
                         }, 2000);
                     })
                     .catch((err) => {
-                        setBackendMessage(err.response.data);
+                        setBackendMessage(err.response.data.error);
+                        setBackendSuccess(false);
                 });
             }
         }
@@ -91,7 +92,7 @@ export default function DetailsPopup (props) {
                     >
                         Submit Rental
                     </Button>
-                    <BackendAlert isSuccessful={rentedSuccess} message={backendMessage}/>
+                    <BackendAlert isSuccessful={backendSuccess} message={backendMessage}/>
                 </div>
             )}
             { props.type === "actor" && (
@@ -110,9 +111,9 @@ export default function DetailsPopup (props) {
             { props.type === "customer" && (
                 <div className='customer-details' style={{ margin: '20px'}}>
                     <h1>Customer Details: </h1>
-                    {/* <CustomerForm
+                    <CustomerForm
                         customer={props.item}
-                    /> */}
+                    />
                     <h1>Movies Rented Out By Customer: </h1>
                     <h3>Title & Return Status</h3>
                     {props.secondItem.map((movie) => (
@@ -127,7 +128,7 @@ export default function DetailsPopup (props) {
                     > 
                         Delete Customer
                     </Button>
-                    <BackendAlert isSuccessful={deleteSuccess} message={backendMessage}/>
+                    <BackendAlert isSuccessful={backendSuccess} message={backendMessage}/>
                 </div>
             )}
         </Dialog>
