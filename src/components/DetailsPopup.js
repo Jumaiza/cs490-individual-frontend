@@ -9,6 +9,7 @@ export default function DetailsPopup (props) {
     const [IsFilmAvailable, setIsFilmAvailable] = useState(true);
     const [backendAlert, setBackendAlert] = useState("");
     const [rentedSuccess, setRentedSuccess] = useState(false);
+    const [deleteSuccess, setDeleteSuccess] = useState(false);
 
     useEffect(() => {
         if(props.type==="movie"){
@@ -33,19 +34,33 @@ export default function DetailsPopup (props) {
     }
 
     const handleClick = (type) => {
-        axios.post('http://localhost:4000/api/movies/rent-to-customer',
-        {inventory_id: filmInventoryId, customer_id: formData.customer_id})
-            .then((res) => {
-                setBackendAlert(res.data)
-                setRentedSuccess(true);
-            })
-            .catch((err) => {
-                setBackendAlert(err.response.data);
-        });
+        if(type === "rent_film"){
+            axios.post('http://localhost:4000/api/movies/rent-to-customer', {inventory_id: filmInventoryId, customer_id: formData.customer_id})
+                .then((res) => {
+                    setBackendAlert(res.data)
+                    setRentedSuccess(true);
+                })
+                .catch((err) => {
+                    setBackendAlert(err.response.data);
+            });
+        }
+        if(window.confirm("Are you sure you want to delete this customer? This action is permenant!")){
+            axios.post('http://localhost:4000/api/customers/delete-customer-by-id', {address_id: props.item.address_id, customer_id: props.item.customer_id})
+                .then((res) => {
+                    setBackendAlert(res.data)
+                    setDeleteSuccess(true);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                })
+                .catch((err) => {
+                    setBackendAlert(err.response.data);
+            });
+        }
     }
 
     return (
-        <Dialog open={props.isOpen} onClose={props.handleClose}>
+        <Dialog open={props.isOpen} onClose={props.handleClose} maxWidth={"lg"} fullWidth>
             { props.type === "movie" && (
                 <div className='movie-details' style={{ margin: '0px 20px 20px 20px '}}>
                     <h1>Movie Details: </h1>
@@ -100,12 +115,25 @@ export default function DetailsPopup (props) {
                         <p>{key}: {value}</p>
                     ))}
                     <h1>Movies Rented Out By Customer: </h1>
-                    <h3>Title & Days Rented</h3>
+                    <h3>Title & Return Status</h3>
                     {props.secondItem.map((movie) => (
                         <>
-                            <p>{ `${movie.title}, ${movie.rental_duration}`}</p>
+                            <p>{ `${movie.title} - ${movie.return_status}`}</p>
                         </>
                     ))}
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => handleClick("delete_customer")}
+                    > 
+                        Delete Customer
+                    </Button>
+                    { (deleteSuccess && backendAlert !== "" ) && (
+                        <Alert severity="success"> {backendAlert} </Alert>
+                    )} 
+                    { (!deleteSuccess && backendAlert !== "")  && (
+                        <Alert severity="error"> {backendAlert} </Alert>
+                    )}
                 </div>
             )}
         </Dialog>
